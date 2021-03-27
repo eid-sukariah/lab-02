@@ -1,38 +1,67 @@
-'use strict';
-let images = [];
-function Image(title,url,description,keyword,horns){
-    this.title = title ;
-    this.url = url ;
-    this.description = description ;
+'use strict'
+
+let arrObj = [];
+let arrOption =[];
+let keyWordArr =[]; //to felter the array
+
+function Animales (url, title, desc, keyword, horns){
+    this.url = url;
+    this.title = title;
+    this.desc = desc;
     this.keyword = keyword;
     this.horns = horns;
-    images.push(this);
+    arrObj.push(this);
 }
 
-Image.prototype.render = function(){
-  let obj = `<div><h2>${this.title}
-  <h2><img src=${this.url}><p>${this.description}
-  </p><p>${this.keyword}</p><p>${this.horns}</p></div>`;
-    $('main').append(obj);
+Animales.prototype.render = function(){
+     $('main').append(`<div> <h2>${this.title}</h2><img src="${this.url}"><p>${this.desc}</p></div>`)
+    console.log(this);
+    
+}
+Animales.prototype.lestRender = function(){
+    $('.select').empty();
+    keyWordArr.push(this.keyword);
+    arrOption = [...new Set(keyWordArr)];
+   
+
 }
 
-// $( document ).ready(function();
 
-const settings ={
-    method:'get',
-    dataType:'json'
+const ajaxSeting ={
+    method: 'get',
+    dataType: 'json',
 }
+$(function(){
+    console.log('ready8')
 
-$.ajax('data/page-1.json' , settings).then((data) => {
-    data.forEach(element => {
-        let cardDiv = $('#photo-template');
-    //    $('img').attr('src', element.image_url);
-
-       let newObj = new Image (element.title , element.image_url , element.description , element.keyword , element.horns);
-    //    console.log(cardDiv.children());
+    $('select').on('change' , (event)=>{
+        $('div').empty();
+        event.preventDefault();
+        // alert('hi from event');
+        let prees = $('select').val();
+        arrObj.forEach(element =>{
+            if(element.keyword == prees){
+                element.render();
+                console.log(element);
+            }
+        });
+       
     });
-})
 
+    $.ajax('data/page-1.json',ajaxSeting).then(response =>{
+        // console.log('response',response);
+        response.forEach(animal =>{
+            
+            let newObj = new Animales(animal.image_url, animal.title, animal.description, animal.keyword, animal.horns);
+            newObj.render();
+            newObj.lestRender();
+            console.log(newObj);
+            arrOption.forEach(element =>{
+                
+                $('select').append(`<option value="${element}">${element}</option>`);
+            });
+        });
+    });
 
-
+});
 
